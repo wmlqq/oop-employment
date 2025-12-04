@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>就业咨询预约系统</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 20px 0;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .tabs {
+            display: flex;
+            background: #fff;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            background: #f1f1f1;
+            border: none;
+            flex: 1;
+            text-align: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            background: #e0e0e0;
+        }
+
+        .tab.active {
+            background: #4a6491;
+            color: white;
+        }
+
+        .content-area {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-display {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #4a6491;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #3a5481;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-group button {
+            flex: 1;
+        }
+
+        .format-options {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .format-options button {
+            flex: 1;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .select-with-search {
+            position: relative;
+        }
+
+        .select-with-search input {
+            width: 100%;
+        }
+
+        .dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .dropdown-option {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dropdown-option:hover {
+            background: #f0f0f0;
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .display-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .display-toggle button {
+            flex: none;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .display-toggle button.active {
+            background: #2c3e50;
+        }
+
+        .export-options {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .filename-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filename-input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .filename-suggestions {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .filename-suggestion {
+            color: #4a6491;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-right: 10px;
+        }
+
+        .filename-suggestion:hover {
+            color: #3a5481;
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .content-area {
+                padding: 15px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>就业咨询预约系统</h1>
+        <p class="subtitle">为学生提供专业的一对一职业规划与就业指导服务</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab active" data-tab="consultants">咨询师信息</button>
+        <button class="tab" data-tab="rooms">咨询室信息</button>
+        <button class="tab" data-tab="add-student">添加学生</button>
+        <button class="tab" data-tab="appointment">咨询预约</button>
+        <button class="tab" data-tab="record">咨询记录</button>
+        <button class="tab" data-tab="export">记录导出</button>
+    </div>
+
+    <div class="content-area">
+        <!-- 咨询师信息选项卡 -->
+        <div id="consultants" class="tab-content active">
+            <h2>咨询师信息</h2>
+            <p>系统内所有咨询师的详细信息（大学咨询师和企业咨询师）</p>
+
+            <div class="display-toggle">
+                <button id="showConsultantsTable" class="active">表格展示</button>
+                <button id="showConsultantsJson">JSON格式</button>
+            </div>
+
+            <button id="loadConsultants">加载咨询师信息</button>
+            <div class="data-display">
+                <div id="consultantsTable" class="table-container">
+                    <!-- 表格将在这里动态生成 -->
+                </div>
+                <pre id="consultantsData" style="display: none;">咨询师信息将显示在这里...</pre>
+            </div>
+        </div>
+
+        <!-- 咨询室信息选项卡 -->
+        <div id="rooms" class="tab-content">
+            <h2>咨询室信息</h2>
+            <p>系统内所有可用咨询室的详细信息</p>
+
+            <div class="display-toggle">
+                <button id="showRoomsTable" class="active">表格展示</button>
+                <button id="showRoomsJson">JSON格式</button>
+            </div>
+
+            <button id="loadRooms">加载咨询室信息</button>
+            <div class="data-display">
+                <div id="roomsTable" class="table-container">
+                    <!-- 表格将在这里动态生成 -->
+                </div>
+                <pre id="roomsData" style="display: none;">咨询室信息将显示在这里...</pre>
+            </div>
+        </div>
+
+        <!-- 添加学生选项卡 -->
+        <div id="add-student" class="tab-content">
+            <h2>添加学生信息</h2>
+            <p>请输入学生的详细信息</p>
+            <form id="studentForm">
+                <div class="form-group">
+                    <label for="studentId">学号 *</label>
+                    <input type="text" id="studentId" name="studentId" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentName">姓名 *</label>
+                    <input type="text" id="studentName" name="studentName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">性别 *</label>
+                    <select id="gender" name="gender" required>
+                        <option value="">请选择</option>
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="college">学院 *</label>
+                    <input type="text" id="college" name="college" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">联系电话 *</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="birthday">生日 *</label>
+                    <input type="date" id="birthday" name="birthday" required>
+                </div>
+
+                <button type="submit">添加学生</button>
+            </form>
+            <div id="studentMessage" class="message hidden"></div>
+        </div>
+
+        <!-- 咨询预约选项卡 -->
+        <div id="appointment" class="tab-content">
+            <h2>咨询预约</h2>
+            <p>请填写咨询预约信息</p>
+            <form id="appointmentForm">
+                <div class="form-group">
+                    <label for="studentSelect">学生选择 *</label>
+                    <div class="select-with-search">
+                        <input type="text" id="studentSelect" placeholder="搜索学生姓名或学号..." autocomplete="off">
+                        <div class="dropdown-options" id="studentOptions">
+                            <div class="dropdown-option loading">输入关键词搜索学生...</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="selectedStudentId" name="studentId">
+                </div>
+
+                <div class="form-group">
+                    <label for="consultantSelect">咨询师选择 *</label>
+                    <div class="select-with-search">
+                        <input type="text" id="consultantSelect" placeholder="搜索咨询师姓名或ID..." autocomplete="off">
+                        <div class="dropdown-options" id="consultantOptions">
+                            <div class="dropdown-option loading">输入关键词搜索咨询师...</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="selectedConsultantId" name="consultantId">
+                </div>
+
+                <div class="form-group">
+                    <label for="roomSelect">咨询室选择 *</label>
+                    <div class="select-with-search">
+                        <input type="text" id="roomSelect" placeholder="搜索咨询室编号或ID..." autocomplete="off">
+                        <div class="dropdown-options" id="roomOptions">
+                            <div class="dropdown-option loading">输入关键词搜索咨询室...</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="selectedRoomId" name="roomId">
+                </div>
+
+                <div class="form-group">
+                    <label for="startTime">咨询起始时间 *</label>
+                    <input type="datetime-local" id="startTime" name="startTime" required>
+                </div>
+
+                <button type="submit">提交预约</button>
+            </form>
+            <div id="appointmentMessage" class="message hidden"></div>
+        </div>
+
+        <!-- 咨询记录选项卡 -->
+        <div id="record" class="tab-content">
+            <h2>完善咨询记录</h2>
+            <p>请输入咨询的详细记录信息</p>
+
+            <div class="display-toggle">
+                <button id="showRecordsTable" class="active">表格展示</button>
+                <button id="showRecordsJson">JSON格式</button>
+            </div>
+
+            <button id="loadRecords">加载咨询记录</button>
+
+            <div class="data-display">
+                <div id="recordsTable" class="table-container">
+                    <!-- 咨询记录表格将在这里动态生成 -->
+                </div>
+                <pre id="recordsData" style="display: none;">咨询记录将显示在这里...</pre>
+            </div>
+
+            <h3 style="margin-top: 30px;">完善记录信息</h3>
+            <form id="recordForm">
+                <div class="form-group">
+                    <label for="recordId">咨询记录ID *</label>
+                    <input type="text" id="recordId" name="recordId" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="endTime">咨询结束时间 *</label>
+                    <input type="datetime-local" id="endTime" name="endTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="question">咨询问题 *</label>
+                    <textarea id="question" name="question" rows="3" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="conclusion">咨询结论 *</label>
+                    <textarea id="conclusion" name="conclusion" rows="3" required></textarea>
+                </div>
+
+                <button type="submit">提交记录</button>
+            </form>
+            <div id="recordMessage" class="message hidden"></div>
+        </div>
+
+        <!-- 记录导出选项卡 -->
+        <div id="export" class="tab-content">
+            <h2>咨询记录导出</h2>
+            <p>选择导出格式，将咨询记录导出为文件</p>
+
+            <div class="export-options">
+                <h3>导出设置</h3>
+                <div class="filename-input-group">
+                    <input type="text" id="exportFilename" placeholder="输入导出文件名，例如: consultation_records" value="consultation_records">
+                </div>
+                <div class="filename-suggestions">
+                    建议文件名:
+                    <span class="filename-suggestion" data-filename="consultation_records">consultation_records</span> |
+                    <span class="filename-suggestion" data-filename="咨询记录_2025">咨询记录_2025</span> |
+                    <span class="filename-suggestion" data-filename="career_consultation">career_consultation</span>
+                </div>
+            </div>
+
+            <div class="format-options">
+                <button id="exportJson">导出为JSON</button>
+                <button id="exportXml">导出为XML</button>
+                <button id="exportTxt">导出为TXT</button>
+            </div>
+
+            <div class="data-display">
+                <pre id="exportData">导出的记录将显示在这里...</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 防抖函数，减少请求频率
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // 选项卡切换功能
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            // 移除所有活动状态
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            // 添加当前活动状态
+            tab.classList.add('active');
+            const tabId = tab.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // 显示消息函数
+    function showMessage(elementId, message, isSuccess = true) {
+        const messageEl = document.getElementById(elementId);
+        messageEl.textContent = message;
+        messageEl.className = isSuccess ? 'message success' : 'message error';
+        messageEl.classList.remove('hidden');
+
+        // 3秒后隐藏消息
+        setTimeout(() => {
+            messageEl.classList.add('hidden');
+        }, 3000);
+    }
+
+    // 文件下载功能
+    function downloadFile(content, filename, contentType) {
+        // 创建Blob对象
+        const blob = new Blob([content], { type: contentType });
+
+        // 创建下载链接
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+
+        // 触发下载
+        document.body.appendChild(a);
+        a.click();
+
+        // 清理
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+    }
+
+    // 创建表格函数
+    function createTable(data, containerId, dataType = 'default') {
+        const container = document.getElementById(containerId);
+
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p>暂无数据</p>';
+            return;
+        }
+
+        // 处理咨询师数据 - 合并school和company字段
+        if (dataType === 'consultants' && data.length > 0) {
+            data = data.map(consultant => {
+                // 合并school和company字段
+                const unit = consultant.school || consultant.company || '';
+                return {
+                    ...consultant,
+                    unit: unit // 新增unit字段显示单位信息
+                };
+            });
+        }
+
+        // 处理咨询记录数据 - 提取嵌套对象的关键信息
+        if (dataType === 'records' && data.length > 0) {
+            data = data.map(record => {
+                return {
+                    id: record.id,
+                    studentName: record.student ? record.student.name : '',
+                    consultantName: record.consultant ? record.consultant.name : '',
+                    roomId: record.room ? record.room.roomId : '',
+                    startTime: record.startTime || '',
+                    endTime: record.endTime || '',
+                    question: record.question || '',
+                    conclusion: record.conclusion || '',
+                    status: record.status || ''
+                };
+            });
+        }
+
+        // 获取表头 - 过滤掉不需要显示的字段
+        let headers = Object.keys(data[0]);
+
+        // 咨询师数据中移除school和company字段，保留unit字段
+        if (dataType === 'consultants') {
+            headers = headers.filter(header => header !== 'school' && header !== 'company');
+        }
+
+        // 咨询记录数据中移除student、consultant、room对象字段
+        if (dataType === 'records') {
+            headers = headers.filter(header =>
+                header !== 'student' && header !== 'consultant' && header !== 'room'
+            );
+        }
+
+        let tableHTML = '<table><thead><tr>';
+        headers.forEach(header => {
+            // 字段名映射为中文
+            const headerMap = {
+                'id': 'ID',
+                'name': '姓名',
+                'unit': '单位', // 咨询师的单位信息
+                'phone': '电话',
+                'introduction': '简介',
+                'type': '类型',
+                'studentName': '学生姓名',
+                'consultantName': '咨询师姓名',
+                'roomId': '咨询室编号',
+                'startTime': '开始时间',
+                'endTime': '结束时间',
+                'question': '咨询问题',
+                'conclusion': '咨询结论',
+                'status': '状态',
+                'room_id': '房间编号',
+                'campus': '校区',
+                'building': '楼宇',
+                'room_number': '房间号',
+                'capacity': '容量'
+            };
+
+            const displayHeader = headerMap[header] || header;
+            tableHTML += `<th>${displayHeader}</th>`;
+        });
+        tableHTML += '</tr></thead><tbody>';
+
+        // 填充数据行
+        data.forEach(item => {
+            tableHTML += '<tr>';
+            headers.forEach(header => {
+                let value = item[header] || '';
+
+                // 处理特殊字段的显示
+                if (header === 'startTime' || header === 'endTime') {
+                    // 格式化日期时间
+                    if (value) {
+                        try {
+                            const date = new Date(value);
+                            value = date.toLocaleString('zh-CN');
+                        } catch (e) {
+                            // 如果日期解析失败，保持原值
+                        }
+                    }
+                }
+
+                // 截断过长的文本
+                if (typeof value === 'string' && value.length > 50) {
+                    value = value.substring(0, 50) + '...';
+                }
+
+                tableHTML += `<td title="${value}">${value}</td>`;
+            });
+            tableHTML += '</tr>';
+        });
+
+        tableHTML += '</tbody></table>';
+        container.innerHTML = tableHTML;
+    }
+
+    // 咨询师信息展示切换
+    document.getElementById('showConsultantsTable').addEventListener('click', function() {
+        document.getElementById('consultantsTable').style.display = 'block';
+        document.getElementById('consultantsData').style.display = 'none';
+        this.classList.add('active');
+        document.getElementById('showConsultantsJson').classList.remove('active');
+    });
+
+    document.getElementById('showConsultantsJson').addEventListener('click', function() {
+        document.getElementById('consultantsTable').style.display = 'none';
+        document.getElementById('consultantsData').style.display = 'block';
+        this.classList.add('active');
+        document.getElementById('showConsultantsTable').classList.remove('active');
+    });
+
+    // 咨询室信息展示切换
+    document.getElementById('showRoomsTable').addEventListener('click', function() {
+        document.getElementById('roomsTable').style.display = 'block';
+        document.getElementById('roomsData').style.display = 'none';
+        this.classList.add('active');
+        document.getElementById('showRoomsJson').classList.remove('active');
+    });
+
+    document.getElementById('showRoomsJson').addEventListener('click', function() {
+        document.getElementById('roomsTable').style.display = 'none';
+        document.getElementById('roomsData').style.display = 'block';
+        this.classList.add('active');
+        document.getElementById('showRoomsTable').classList.remove('active');
+    });
+
+    // 咨询记录展示切换
+    document.getElementById('showRecordsTable').addEventListener('click', function() {
+        document.getElementById('recordsTable').style.display = 'block';
+        document.getElementById('recordsData').style.display = 'none';
+        this.classList.add('active');
+        document.getElementById('showRecordsJson').classList.remove('active');
+    });
+
+    document.getElementById('showRecordsJson').addEventListener('click', function() {
+        document.getElementById('recordsTable').style.display = 'none';
+        document.getElementById('recordsData').style.display = 'block';
+        this.classList.add('active');
+        document.getElementById('showRecordsTable').classList.remove('active');
+    });
+
+    // 加载咨询师信息 - 使用POST方法
+    document.getElementById('loadConsultants').addEventListener('click', async () => {
+        try {
+            const response = await fetch('/api/consultants', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error('HTTP错误: ' + response.status);
+
+            const result = await response.json();
+
+            if (result.success) {
+                const consultantsData = result.data;
+
+                // 表格展示
+                createTable(consultantsData, 'consultantsTable', 'consultants');
+
+                // JSON展示
+                document.getElementById('consultantsData').textContent =
+                    JSON.stringify(consultantsData, null, 2);
+            } else {
+                throw new Error('后端返回错误: ' + result.message);
+            }
+
+        } catch (error) {
+            document.getElementById('consultantsData').textContent = '错误: ' + error.message;
+            document.getElementById('consultantsTable').innerHTML = '<p>错误: ' + error.message + '</p>';
+            console.error('加载咨询师信息失败:', error);
+        }
+    });
+
+    // 加载咨询室信息 - 使用POST方法
+    document.getElementById('loadRooms').addEventListener('click', async () => {
+        try {
+            const response = await fetch('/api/rooms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error('HTTP错误: ' + response.status);
+
+            const result = await response.json();
+
+            if (result.success) {
+                const roomsData = result.data;
+
+                // 表格展示
+                createTable(roomsData, 'roomsTable', 'rooms');
+
+                // JSON展示
+                document.getElementById('roomsData').textContent =
+                    JSON.stringify(roomsData, null, 2);
+            } else {
+                throw new Error('后端返回错误: ' + result.message);
+            }
+
+        } catch (error) {
+            document.getElementById('roomsData').textContent = '错误: ' + error.message;
+            document.getElementById('roomsTable').innerHTML = '<p>错误: ' + error.message + '</p>';
+            console.error('加载咨询室信息失败:', error);
+        }
+    });
+
+    // 加载咨询记录
+    document.getElementById('loadRecords').addEventListener('click', async () => {
+        try {
+            const response = await fetch('/api/consult_records', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error('HTTP错误: ' + response.status);
+
+            const result = await response.json();
+
+            if (result.success) {
+                const recordsData = result.data;
+
+                // 表格展示
+                createTable(recordsData, 'recordsTable', 'records');
+
+                // JSON展示
+                document.getElementById('recordsData').textContent =
+                    JSON.stringify(recordsData, null, 2);
+            } else {
+                throw new Error('后端返回错误: ' + result.message);
+            }
+
+        } catch (error) {
+            document.getElementById('recordsData').textContent = '错误: ' + error.message;
+            document.getElementById('recordsTable').innerHTML = '<p>错误: ' + error.message + '</p>';
+            console.error('加载咨询记录失败:', error);
+        }
+    });
+
+    // 添加学生表单提交
+    document.getElementById('studentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = {
+            studentId: document.getElementById('studentId').value,
+            name: document.getElementById('studentName').value,
+            gender: document.getElementById('gender').value,
+            college: document.getElementById('college').value,
+            phone: document.getElementById('phone').value,
+            birthday: document.getElementById('birthday').value
+        };
+        try {
+            const response = await fetch('/api/students', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || '服务器错误');
+            }
+
+            if (result.success) {
+                showMessage('studentMessage', result.message, true);
+                document.getElementById('studentForm').reset();
+            } else {
+                showMessage('studentMessage', '错误: ' + result.message, false);
+            }
+
+        } catch (error) {
+            showMessage('studentMessage', '错误: ' + error.message, false);
+        }
+    });
+
+    // 学生模糊搜索函数
+    const searchStudents = debounce(async (keyword) => {
+        const studentOptions = document.getElementById('studentOptions');
+
+        if (!keyword) {
+            studentOptions.innerHTML = '<div class="dropdown-option loading">请输入至少1个字符进行搜索</div>';
+            studentOptions.style.display = 'block';
+            return;
+        }
+
+        try {
+            studentOptions.innerHTML = '<div class="dropdown-option loading">搜索中...</div>';
+            studentOptions.style.display = 'block';
+
+            // 调用后端模糊搜索API
+            const response = await fetch(`/api/students/search?keyword=${encodeURIComponent(keyword)}`);
+
+            if (!response.ok) throw new Error('搜索失败');
+
+            const result = await response.json();
+
+            if (result.success) {
+                const students = result.data;
+                studentOptions.innerHTML = '';
+
+                if (students.length === 0) {
+                    studentOptions.innerHTML = '<div class="dropdown-option">未找到匹配的学生</div>';
+                    return;
+                }
+
+                students.forEach(student => {
+                    const option = document.createElement('div');
+                    option.className = 'dropdown-option';
+                    option.textContent = `${student.name}（${student.studentId}）`;
+                    option.dataset.id = student.id;
+                    option.dataset.studentId = student.studentId;
+                    option.dataset.name = student.name;
+
+                    option.addEventListener('click', () => {
+                        document.getElementById('studentSelect').value = `${student.name}（${student.studentId}）`;
+                        document.getElementById('selectedStudentId').value = student.id;
+                        studentOptions.style.display = 'none';
+                    });
+
+                    studentOptions.appendChild(option);
+                });
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            studentOptions.innerHTML = '<div class="dropdown-option">搜索失败: ' + error.message + '</div>';
+            console.error('搜索学生失败:', error);
+        }
+    }, 300);
+
+    // 咨询师模糊搜索函数
+    const searchConsultants = debounce(async (keyword) => {
+        const consultantOptions = document.getElementById('consultantOptions');
+
+        if (!keyword) {
+            consultantOptions.innerHTML = '<div class="dropdown-option loading">请输入至少1个字符进行搜索</div>';
+            consultantOptions.style.display = 'block';
+            return;
+        }
+
+        try {
+            consultantOptions.innerHTML = '<div class="dropdown-option loading">搜索中...</div>';
+            consultantOptions.style.display = 'block';
+
+            // 调用后端模糊搜索API
+            const response = await fetch(`/api/consultants/search?keyword=${encodeURIComponent(keyword)}`);
+
+            if (!response.ok) throw new Error('搜索失败');
+
+            const result = await response.json();
+
+            if (result.success) {
+                const consultants = result.data;
+                consultantOptions.innerHTML = '';
+
+                if (consultants.length === 0) {
+                    consultantOptions.innerHTML = '<div class="dropdown-option">未找到匹配的咨询师</div>';
+                    return;
+                }
+
+                consultants.forEach(consultant => {
+                    const option = document.createElement('div');
+                    option.className = 'dropdown-option';
+                    option.textContent = `${consultant.name}（${consultant.id}）`;
+                    option.dataset.id = consultant.id;
+                    option.dataset.name = consultant.name;
+
+                    option.addEventListener('click', () => {
+                        document.getElementById('consultantSelect').value = `${consultant.name}（${consultant.id}）`;
+                        document.getElementById('selectedConsultantId').value = consultant.id;
+                        consultantOptions.style.display = 'none';
+                    });
+
+                    consultantOptions.appendChild(option);
+                });
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            consultantOptions.innerHTML = '<div class="dropdown-option">搜索失败: ' + error.message + '</div>';
+            console.error('搜索咨询师失败:', error);
+        }
+    }, 300);
+
+    // 咨询室模糊搜索函数
+    const searchRooms = debounce(async (keyword) => {
+        const roomOptions = document.getElementById('roomOptions');
+
+        if (!keyword) {
+            roomOptions.innerHTML = '<div class="dropdown-option loading">请输入至少1个字符进行搜索</div>';
+            roomOptions.style.display = 'block';
+            return;
+        }
+
+        try {
+            roomOptions.innerHTML = '<div class="dropdown-option loading">搜索中...</div>';
+            roomOptions.style.display = 'block';
+
+            // 调用后端模糊搜索API
+            const response = await fetch(`/api/rooms/search?keyword=${encodeURIComponent(keyword)}`);
+
+            if (!response.ok) throw new Error('搜索失败');
+
+            const result = await response.json();
+
+            if (result.success) {
+                const rooms = result.data;
+                roomOptions.innerHTML = '';
+
+                if (rooms.length === 0) {
+                    roomOptions.innerHTML = '<div class="dropdown-option">未找到匹配的咨询室</div>';
+                    return;
+                }
+
+                rooms.forEach(room => {
+                    const option = document.createElement('div');
+                    option.className = 'dropdown-option';
+                    option.textContent = `${room.roomId}（ID: ${room.id}）`;
+                    option.dataset.id = room.id;
+                    option.dataset.roomId = room.roomId;
+
+                    option.addEventListener('click', () => {
+                        document.getElementById('roomSelect').value = `${room.roomId}（ID: ${room.id}）`;
+                        document.getElementById('selectedRoomId').value = room.id;
+                        roomOptions.style.display = 'none';
+                    });
+
+                    roomOptions.appendChild(option);
+                });
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            roomOptions.innerHTML = '<div class="dropdown-option">搜索失败: ' + error.message + '</div>';
+            console.error('搜索咨询室失败:', error);
+        }
+    }, 300);
+
+    // 初始化学生搜索功能
+    function initStudentSearch() {
+        const studentSelect = document.getElementById('studentSelect');
+        const studentOptions = document.getElementById('studentOptions');
+
+        studentSelect.addEventListener('input', (e) => {
+            const keyword = e.target.value.trim();
+            searchStudents(keyword);
+        });
+
+        // 点击外部隐藏下拉框
+        document.addEventListener('click', (e) => {
+            if (!studentSelect.contains(e.target) && !studentOptions.contains(e.target)) {
+                studentOptions.style.display = 'none';
+            }
+        });
+    }
+
+    // 初始化咨询师搜索功能
+    function initConsultantSearch() {
+        const consultantSelect = document.getElementById('consultantSelect');
+        const consultantOptions = document.getElementById('consultantOptions');
+
+        consultantSelect.addEventListener('input', (e) => {
+            const keyword = e.target.value.trim();
+            searchConsultants(keyword);
+        });
+
+        // 点击外部隐藏下拉框
+        document.addEventListener('click', (e) => {
+            if (!consultantSelect.contains(e.target) && !consultantOptions.contains(e.target)) {
+                consultantOptions.style.display = 'none';
+            }
+        });
+    }
+
+    // 初始化咨询室搜索功能
+    function initRoomSearch() {
+        const roomSelect = document.getElementById('roomSelect');
+        const roomOptions = document.getElementById('roomOptions');
+
+        roomSelect.addEventListener('input', (e) => {
+            const keyword = e.target.value.trim();
+            searchRooms(keyword);
+        });
+
+        // 点击外部隐藏下拉框
+        document.addEventListener('click', (e) => {
+            if (!roomSelect.contains(e.target) && !roomOptions.contains(e.target)) {
+                roomOptions.style.display = 'none';
+            }
+        });
+    }
+
+    // 咨询预约表单提交
+    document.getElementById('appointmentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const studentId = document.getElementById('selectedStudentId').value;
+        const consultantId = document.getElementById('selectedConsultantId').value;
+        const roomId = document.getElementById('selectedRoomId').value;
+
+        if (!studentId) {
+            showMessage('appointmentMessage', '请选择学生', false);
+            return;
+        }
+
+        if (!consultantId) {
+            showMessage('appointmentMessage', '请选择咨询师', false);
+            return;
+        }
+
+        if (!roomId) {
+            showMessage('appointmentMessage', '请选择咨询室', false);
+            return;
+        }
+
+        const formData = {
+            studentId: studentId,
+            consultantId: consultantId,
+            roomId: roomId,
+            startTime: document.getElementById('startTime').value,
+            status: '未完成'
+        };
+
+        try {
+            const response = await fetch('/api/appointments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || '预约失败');
+            }
+
+            if (result.success) {
+                showMessage('appointmentMessage', `${result.message}，记录ID: ${result.recordId}`, true);
+                document.getElementById('appointmentForm').reset();
+                document.getElementById('selectedStudentId').value = '';
+                document.getElementById('selectedConsultantId').value = '';
+                document.getElementById('selectedRoomId').value = '';
+            } else {
+                throw new Error(result.message || '预约失败');
+            }
+
+        } catch (error) {
+            showMessage('appointmentMessage', '错误: ' + error.message, false);
+        }
+    });
+
+    // 修复后的咨询记录提交函数
+    document.getElementById('recordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = {
+            recordId: document.getElementById('recordId').value,
+            endTime: document.getElementById('endTime').value,
+            question: document.getElementById('question').value,
+            conclusion: document.getElementById('conclusion').value
+        };
+
+        // 验证输入
+        if (!formData.recordId || !formData.endTime || !formData.question || !formData.conclusion) {
+            showMessage('recordMessage', '请填写所有必填字段', false);
+            return;
+        }
+
+        try {
+            const requestData = {
+                recordId: Number(formData.recordId),
+                endTime: formData.endTime,
+                question: formData.question,
+                conclusion: formData.conclusion
+            };
+
+            const response = await fetch('/api/records', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                showMessage('recordMessage', result.message, true);
+                document.getElementById('recordForm').reset();
+
+                // 重新加载咨询记录
+                document.getElementById('loadRecords').click();
+            } else {
+                showMessage('recordMessage', result.message || '更新失败', false);
+            }
+
+        } catch (error) {
+            console.error('更新记录错误:', error);
+            showMessage('recordMessage', '网络错误: ' + error.message, false);
+        }
+    });
+
+    // 文件名建议点击事件
+    document.querySelectorAll('.filename-suggestion').forEach(suggestion => {
+        suggestion.addEventListener('click', () => {
+            document.getElementById('exportFilename').value = suggestion.getAttribute('data-filename');
+        });
+    });
+
+    // 导出为JSON
+    document.getElementById('exportJson').addEventListener('click', async () => {
+        const filename = document.getElementById('exportFilename').value;
+        if (!filename) {
+            showMessage('exportData', '请输入文件名', false);
+            return;
+        }
+
+        try {
+            // 调用后端API获取JSON数据
+            const response = await fetch('/api/records/export?format=json');
+
+            if (!response.ok) {
+                throw new Error(`导出失败: ${response.status} ${response.statusText}`);
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                const jsonContent = JSON.stringify(result.data, null, 2);
+                const fullFilename = filename.endsWith('.json') ? filename : `${filename}.json`;
+
+                // 下载文件
+                downloadFile(jsonContent, fullFilename, 'application/json');
+
+                // 在页面上显示内容
+                document.getElementById('exportData').textContent = jsonContent;
+                showMessage('exportData', `JSON文件已生成，正在下载: ${fullFilename}`, true);
+            } else {
+                throw new Error(result.message || '导出失败');
+            }
+        } catch (error) {
+            document.getElementById('exportData').textContent = '错误: ' + error.message;
+            showMessage('exportData', '导出失败: ' + error.message, false);
+        }
+    });
+
+    // 导出为XML修复示例
+document.getElementById('exportXml').addEventListener('click', async () => {
+    const filename = document.getElementById('exportFilename').value;
+    if (!filename) {
+        showMessage('exportData', '请输入文件名', false);
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/records/export?format=xml');
+
+        if (!response.ok) {
+            throw new Error(`导出失败: ${response.status} ${response.statusText}`);
+        }
+
+        // 关键修复：先克隆响应
+        const responseClone = response.clone();
+
+        // 1. 处理文件下载（使用原始响应）
+        const blob = await response.blob();
+        const fullFilename = filename.endsWith('.xml') ? filename : `${filename}.xml`;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fullFilename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        // 2. 处理内容预览（使用克隆的响应）
+        const xmlContent = await responseClone.text();
+        document.getElementById('exportData').textContent = xmlContent;
+        showMessage('exportData', `XML文件已下载: ${fullFilename}`, true);
+    } catch (error) {
+        document.getElementById('exportData').textContent = '错误: ' + error.message;
+        showMessage('exportData', '导出失败: ' + error.message, false);
+    }
+});
+
+// 导出为TXT修复示例
+document.getElementById('exportTxt').addEventListener('click', async () => {
+    const filename = document.getElementById('exportFilename').value;
+    if (!filename) {
+        showMessage('exportData', '请输入文件名', false);
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/records/export?format=txt');
+
+        if (!response.ok) {
+            throw new Error(`导出失败: ${response.status} ${response.statusText}`);
+        }
+
+        // 先克隆响应
+        const responseClone = response.clone();
+
+        // 1. 处理文件下载
+        const blob = await response.blob();
+        const fullFilename = filename.endsWith('.txt') ? filename : `${filename}.txt`;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fullFilename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        // 2. 处理内容预览
+        const txtContent = await responseClone.text();
+        document.getElementById('exportData').textContent = txtContent;
+        showMessage('exportData', `TXT文件已下载: ${fullFilename}`, true);
+    } catch (error) {
+        document.getElementById('exportData').textContent = '错误: ' + error.message;
+        showMessage('exportData', '导出失败: ' + error.message, false);
+    }
+});
+
+    // 页面加载时初始化
+    window.addEventListener('DOMContentLoaded', () => {
+        const now = new Date();
+        const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+        document.getElementById('startTime').value = localDateTime;
+        document.getElementById('endTime').value = localDateTime;
+
+        // 初始化搜索功能
+        initStudentSearch();
+        initConsultantSearch();
+        initRoomSearch();
+
+        // 设置默认文件名（带日期）
+        const today = new Date();
+        const dateString = today.toISOString().split('T')[0].replace(/-/g, '');
+        document.getElementById('exportFilename').value = `consultation_records_${dateString}`;
+    });
+</script>
+</body>
+</html>

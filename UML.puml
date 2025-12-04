@@ -1,0 +1,212 @@
+@startuml
+' 声明样式
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' 实体类
+class Student {
+    -Long id
+    -String studentId
+    -String name
+    -String gender
+    -String college
+    -String phone
+    -LocalDate birthday
+}
+
+class Consultant {
+    -Long id
+    -String idCard
+    -String name
+    -String phone
+    -String introduction
+}
+
+class CompanyConsultant {
+    -String company
+}
+
+class OwnConsultant {
+    -String school
+}
+
+class Room {
+    -Long id
+    -String roomId
+    -String campus
+    -String building
+    -String roomNumber
+    -Integer capacity
+}
+
+class ConsultRecord {
+    -Long id
+    -Consultant consultant
+    -Student student
+    -Room room
+    -LocalDateTime startTime
+    -LocalDateTime endTime
+    -String question
+    -String conclusion
+    -String status
+}
+
+class Result {
+    -boolean success
+    -String message
+    -Object data
+}
+
+' DTO类
+class StudentDTO {
+    -String studentId
+    -String name
+    -String gender
+    -String college
+    -String phone
+    -LocalDate birthday
+}
+
+class ConsultRecordDTO {
+    -Long studentId
+    -Long consultantId
+    -Long roomId
+    -LocalDateTime startTime
+    -String status
+}
+
+class UpdateConsultRecordDTO {
+    -Long recordId
+    -LocalDateTime endTime
+    -String question
+    -String conclusion
+}
+
+' Repository接口
+interface StudentRepository {
+    +Student findByStudentId(String studentId)
+    +List<Student> findByNameContainingOrStudentIdContaining(String keyword, String keyword1)
+}
+
+interface ConsultantRepository {
+    +List<Consultant> findByType(Class<? extends Consultant> type)
+    +List<Consultant> findAllOwnConsultants()
+    +List<Consultant> findAllCompanyConsultants()
+    +List<Consultant> findByNameContainingOrId(String name, Long id)
+    +List<Consultant> findByNameContaining(String keyword)
+}
+
+interface RoomRepository {
+    +List<Room> findByRoomIdContainingOrId(String keyword, Long id)
+    +List<Room> findByRoomIdContaining(String keyword)
+}
+
+interface ConsultRecordRepository {
+}
+
+' Service类
+class StudentService {
+    -StudentRepository studentRepository
+    +Student addStudent(StudentDTO studentDTO)
+    +List<Student> searchStudents(String keyword)
+}
+
+class ConsultantService {
+    -ConsultantRepository consultantRepository
+    +List<Consultant> getAllConsultants()
+    +List<Consultant> searchConsultant(String keyword)
+}
+
+class RoomService {
+    -RoomRepository roomRepository
+    +List<Room> getAllRooms()
+    +List<Room> searchRooms(String keyword)
+}
+
+class ConsultRecordService {
+    -ConsultRecordRepository consultRecordRepository
+    -StudentRepository studentRepository
+    -ConsultantRepository consultantRepository
+    -RoomRepository roomRepository
+    +ConsultRecord addConsultRecord(ConsultRecordDTO consultRecordDTO)
+    +ConsultRecord updateConsultRecord(UpdateConsultRecordDTO updateConsultRecordDTO)
+    +List<ConsultRecord> getAllConsultRecords()
+}
+
+interface ExportRecordService {
+    +String format()
+}
+
+class XmlExportRecordService {
+    -ConsultRecordRepository consultRecordRepository
+    +String format()
+}
+
+class TxtExportRecordService {
+    -ConsultRecordRepository consultRecordRepository
+    +String format()
+}
+
+' Controller类
+class StudentController {
+    -StudentService studentService
+    +Result addStudent(StudentDTO studentDTO)
+    +Result searchStudents(String keyword)
+}
+
+class ConsultantController {
+    -ConsultantService consultantService
+    +ResponseEntity<Result> showAllConsultant()
+    +Result searchConsultant(String keyword)
+}
+
+class RoomController {
+    -RoomService roomService
+    +ResponseEntity<Result> showAllRooms()
+    +Result searchRooms(String keyword)
+}
+
+class ConsultRecordController {
+    -ConsultRecordService consultRecordService
+    -TxtExportRecordService txtExportRecordService
+    -XmlExportRecordService xmlExportRecordService
+    +Result addConsultRecord(ConsultRecordDTO consultRecordDTO)
+    +ResponseEntity<Result> updateConsultRecord(UpdateConsultRecordDTO updateConsultRecordDTO)
+    +ResponseEntity<Result> showAllConsultRecord()
+    +ResponseEntity<?> exportConsultRecord(String format)
+}
+
+' 关系
+Consultant <|-- CompanyConsultant
+Consultant <|-- OwnConsultant
+
+ConsultRecord "1" --> "1" Consultant
+ConsultRecord "1" --> "1" Student
+ConsultRecord "1" --> "1" Room
+
+StudentRepository <|.. StudentService
+ConsultantRepository <|.. ConsultantService
+RoomRepository <|.. RoomService
+ConsultRecordRepository <|.. ConsultRecordService
+ConsultRecordRepository <|.. XmlExportRecordService
+ConsultRecordRepository <|.. TxtExportRecordService
+
+ExportRecordService <|.. XmlExportRecordService
+ExportRecordService <|.. TxtExportRecordService
+
+StudentService --> StudentRepository
+ConsultantService --> ConsultantRepository
+RoomService --> RoomRepository
+ConsultRecordService --> ConsultRecordRepository
+ConsultRecordService --> StudentRepository
+ConsultRecordService --> ConsultantRepository
+ConsultRecordService --> RoomRepository
+
+StudentController --> StudentService
+ConsultantController --> ConsultantService
+RoomController --> RoomService
+ConsultRecordController --> ConsultRecordService
+ConsultRecordController --> TxtExportRecordService
+ConsultRecordController --> XmlExportRecordService
+
+@enduml
